@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% set active_page = "planner" %}
+
+{% block title %}AI Study Planner{% endblock %}
+{% block page_heading %}AI Smart Study Planner{% endblock %}
+{% block page_subheading %}1-click <span class="highlight-word">smart timetables</span> that <span class="highlight-word">adapt automatically</span> when your plans shift{% endblock %}
+
+{% block content %}
+<div class="space-y-6 animate-fade-up">
+
+  <!-- AI Generator Configuration Card -->
+  <div class="card p-6">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-slate-200">
+      <div>
+        <span class="badge badge-purple mb-1.5">Smart Timetable Generator + Adaptive Engine</span>
+        <h2 class="text-lg font-bold text-slate-900">Configure Study Preferences</h2>
+      </div>
+      <div class="flex flex-wrap gap-2.5">
+        <button id="adaptPlanBtn" type="button" class="btn btn-outline">
+          <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Adapt Timetable
+        </button>
+        <button id="generatePlanBtn" type="button" class="btn btn-primary">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          Generate AI Timetable
+        </button>
+      </div>
+    </div>
+
+    <form id="plannerConfigForm" class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-5">
+      <div>
+        <label class="form-label">Weekday Hours / Day</label>
+        <input id="weekdayHoursInput" type="number" step="0.5" min="1" max="12" value="4" class="form-input" />
+      </div>
+      <div>
+        <label class="form-label">Weekend Hours / Day</label>
+        <input id="weekendHoursInput" type="number" step="0.5" min="1" max="14" value="6" class="form-input" />
+      </div>
+      <div>
+        <label class="form-label">Preferred Study Window</label>
+        <select id="preferredTimeSelect" class="form-select">
+          <option value="morning">Morning (07:00 AM+)</option>
+          <option value="afternoon">Afternoon (02:00 PM+)</option>
+          <option value="evening" selected>Evening (06:00 PM+)</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">AI Prioritization Mode</label>
+        <select id="focusStrategySelect" class="form-select">
+          <option value="balanced" selected>Balanced Smart Mix</option>
+          <option value="exam_crunch">Exam Proximity Crunch</option>
+          <option value="weak_first">Weak Topics First</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Block Duration</label>
+        <select id="sessionDurationSelect" class="form-select">
+          <option value="1">60 min focused blocks</option>
+          <option value="1.5" selected>90 min deep blocks</option>
+          <option value="0.75">45 min sprint blocks</option>
+        </select>
+      </div>
+    </form>
+  </div>
+
+  <!-- View Switcher & AI Summary Banner -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="inline-flex p-1 rounded-xl bg-white border border-slate-200 shadow-sm">
+      <button type="button" data-plan-view="daily" class="plan-view-btn px-4 py-2 rounded-lg text-sm font-bold bg-[#0b1437] text-white">Daily Timetable</button>
+      <button type="button" data-plan-view="weekly" class="plan-view-btn px-4 py-2 rounded-lg text-sm font-bold text-slate-600">Weekly Grid (7 Days)</button>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <label class="text-xs font-semibold text-slate-600">Inspect Date:</label>
+      <input id="dailyDatePicker" type="date" class="form-input w-auto py-1.5 text-sm" />
+    </div>
+  </div>
+
+  <!-- Daily View Container -->
+  <div id="dailyPlannerView" class="grid lg:grid-cols-12 gap-6">
+    <div class="lg:col-span-8 card p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 id="dailyViewTitle" class="text-base font-bold text-slate-900">Today's Study Timeline</h3>
+          <p class="text-xs text-slate-500">Click Complete when done or Missed to let the Adaptive Planner reschedule it</p>
+        </div>
+        <span id="dailyTotalHoursPill" class="badge badge-cyan">0 hrs planned</span>
+      </div>
+      <div id="dailyTimelineList" class="space-y-3">
+        <p class="text-sm text-slate-400 py-8 text-center">Loading timetable...</p>
+      </div>
+    </div>
+
+    <!-- Built-in Focus Timer & AI Rationale -->
+    <div class="lg:col-span-4 space-y-5">
+      <div class="hero-navy rounded-2xl p-6 text-white shadow-lg">
+        <span class="badge badge-cyan mb-2">Study Focus Timer</span>
+        <p id="timerActiveTopic" class="text-sm text-slate-300 truncate">Select a session or start 25-min Pomodoro</p>
+        <div id="focusTimerDisplay" class="text-4xl font-extrabold tracking-tight my-4 text-cyan-300 font-mono">25:00</div>
+        <div class="flex gap-2">
+          <button id="timerToggleBtn" type="button" class="btn btn-cyan btn-sm flex-1">Start Focus</button>
+          <button id="timerResetBtn" type="button" class="btn btn-outline-light btn-sm">Reset</button>
+        </div>
+      </div>
+
+      <div class="card p-5">
+        <h4 class="text-sm font-bold text-slate-900 mb-2">Why AI Picked This Order</h4>
+        <div id="plannerRationaleList" class="space-y-2.5 text-xs text-slate-600">
+          <p>Generate or refresh your timetable to inspect topic priority weights.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weekly View Container -->
+  <div id="weeklyPlannerView" class="hidden">
+    <div id="weeklyGridContainer" class="grid md:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/planner.js') }}"></script>
+{% endblock %}
+

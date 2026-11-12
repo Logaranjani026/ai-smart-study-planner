@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% set active_page = "subjects" %}
+
+{% block title %}Subject Management{% endblock %}
+{% block page_heading %}Subjects, Chapters &amp; Exams{% endblock %}
+{% block page_subheading %}Easily add <span class="highlight-word">subjects</span>, set <span class="highlight-word">priorities</span>, manage <span class="highlight-word">topics</span>, and track <span class="highlight-word">exam dates</span>{% endblock %}
+
+{% block content %}
+<div class="space-y-6 animate-fade-up">
+
+  <!-- Action Toolbar -->
+  <div class="card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="flex flex-wrap items-center gap-3 flex-1">
+      <input id="subjectSearchInput" type="text" class="form-input max-w-xs" placeholder="Search subjects or topics..." />
+      <select id="priorityFilterSelect" class="form-select max-w-[170px]">
+        <option value="all">All Priorities</option>
+        <option value="High">High Priority</option>
+        <option value="Medium">Medium Priority</option>
+        <option value="Low">Low Priority</option>
+      </select>
+    </div>
+    <button id="openAddSubjectBtn" type="button" class="btn btn-primary">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+      </svg>
+      Add New Subject
+    </button>
+  </div>
+
+  <!-- Subjects List -->
+  <div id="subjectsGrid" class="space-y-5">
+    <div class="card p-10 text-center text-slate-400">Loading your subjects...</div>
+  </div>
+
+</div>
+
+<!-- Add / Edit Subject Modal -->
+<div id="subjectModal" class="modal-overlay">
+  <div class="modal-box p-6">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+      <h3 id="subjectModalTitle" class="text-lg font-bold text-slate-900">Add Subject</h3>
+      <button type="button" onclick="closeModal('subjectModal')" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+    </div>
+    <form id="subjectForm" class="space-y-4 mt-4">
+      <input type="hidden" id="subjectIdField" />
+      <div class="grid sm:grid-cols-3 gap-3">
+        <div class="sm:col-span-2">
+          <label class="form-label">Subject Name</label>
+          <input id="subjectNameInput" type="text" class="form-input" placeholder="e.g., Data Structures & Algorithms" required />
+        </div>
+        <div>
+          <label class="form-label">Course Code</label>
+          <input id="subjectCodeInput" type="text" class="form-input" placeholder="CS301" />
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-3">
+        <div>
+          <label class="form-label">Priority</label>
+          <select id="subjectPriorityInput" class="form-select">
+            <option value="High">High</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Difficulty (1-5)</label>
+          <select id="subjectDifficultyInput" class="form-select">
+            <option value="1">1 - Very Easy</option>
+            <option value="2">2 - Easy</option>
+            <option value="3" selected>3 - Moderate</option>
+            <option value="4">4 - Challenging</option>
+            <option value="5">5 - Very Hard</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Target Hrs/Week</label>
+          <input id="subjectTargetHoursInput" type="number" step="0.5" min="1" max="40" value="6" class="form-input" required />
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Color Theme</label>
+          <select id="subjectColorInput" class="form-select">
+            <option value="#6d28d9">Royal Purple</option>
+            <option value="#06b6d4">Light Cyan</option>
+            <option value="#0b1437">Dark Navy</option>
+            <option value="#059669">Emerald</option>
+            <option value="#d97706">Amber</option>
+            <option value="#e11d48">Rose</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Primary Exam Date (Optional)</label>
+          <input id="subjectExamDateInput" type="date" class="form-input" />
+        </div>
+      </div>
+
+      <div id="examTitleRow">
+        <label class="form-label">Exam Title (if date set)</label>
+        <input id="subjectExamTitleInput" type="text" class="form-input" placeholder="e.g., Final Semester Exam" value="Semester Exam" />
+      </div>
+
+      <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" onclick="closeModal('subjectModal')" class="btn btn-outline">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Subject</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add / Edit Topic Modal -->
+<div id="topicModal" class="modal-overlay">
+  <div class="modal-box p-6">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+      <h3 id="topicModalTitle" class="text-lg font-bold text-slate-900">Add Chapter &amp; Topic</h3>
+      <button type="button" onclick="closeModal('topicModal')" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+    </div>
+    <form id="topicForm" class="space-y-4 mt-4">
+      <input type="hidden" id="topicSubjectIdField" />
+      <input type="hidden" id="topicIdField" />
+      <div>
+        <label class="form-label">Chapter / Unit Name</label>
+        <input id="topicChapterInput" type="text" class="form-input" placeholder="e.g., Chapter 3: Graph Algorithms" required />
+      </div>
+      <div>
+        <label class="form-label">Topic Name</label>
+        <input id="topicNameInput" type="text" class="form-input" placeholder="e.g., Dijkstra's Shortest Path" required />
+      </div>
+      <div class="grid sm:grid-cols-3 gap-3">
+        <div>
+          <label class="form-label">Estimated Hours</label>
+          <input id="topicHoursInput" type="number" step="0.5" min="0.5" max="30" value="2" class="form-input" required />
+        </div>
+        <div>
+          <label class="form-label">Status</label>
+          <select id="topicStatusInput" class="form-select">
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Understanding (1-5)</label>
+          <select id="topicRatingInput" class="form-select">
+            <option value="1">1 - Very Weak</option>
+            <option value="2">2 - Needs Work</option>
+            <option value="3" selected>3 - Average</option>
+            <option value="4">4 - Good</option>
+            <option value="5">5 - Strong</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" onclick="closeModal('topicModal')" class="btn btn-outline">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Topic</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Exam Modal -->
+<div id="examModal" class="modal-overlay">
+  <div class="modal-box p-6">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+      <h3 class="text-lg font-bold text-slate-900">Schedule Subject Exam</h3>
+      <button type="button" onclick="closeModal('examModal')" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+    </div>
+    <form id="examForm" class="space-y-4 mt-4">
+      <input type="hidden" id="examSubjectIdField" />
+      <div>
+        <label class="form-label">Exam Title</label>
+        <input id="examTitleInput" type="text" class="form-input" placeholder="e.g., Midterm Examination" required />
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Exam Date</label>
+          <input id="examDateInput" type="date" class="form-input" required />
+        </div>
+        <div>
+          <label class="form-label">Exam Time</label>
+          <input id="examTimeInput" type="time" value="09:00" class="form-input" />
+        </div>
+      </div>
+      <div>
+        <label class="form-label">Syllabus / Notes</label>
+        <input id="examNotesInput" type="text" class="form-input" placeholder="Chapters 1 to 4" />
+      </div>
+      <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" onclick="closeModal('examModal')" class="btn btn-outline">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Exam</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/subjects.js') }}"></script>
+{% endblock %}
+

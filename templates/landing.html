@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI-Based Smart Study Planner — Study Smarter, Not Harder.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 950: '#070d26', 900: '#0b1437', 850: '#0f172a', 800: '#1e293b' },
+            purplebrand: { 600: '#6d28d9', 500: '#7c3aed', 400: '#8b5cf6' },
+            cyanaccent: { 500: '#06b6d4', 400: '#22d3ee', 300: '#67e8f9' }
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=4) }}" />
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+  <!-- Navigation Bar -->
+  <header class="sticky top-0 z-50 bg-[#0b1437]/90 backdrop-blur-md border-b border-white/10 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-3.5 flex items-center justify-between gap-4">
+      <a href="{{ url_for('pages.landing') }}" class="flex items-center gap-3 text-white no-underline group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+        </div>
+        <div>
+          <span class="font-display font-bold text-lg tracking-tight block leading-none">Smart <span class="px-1.5 py-0.5 rounded-md bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white">Study</span> Planner</span>
+          <span class="text-[11px] uppercase tracking-widest text-cyan-300 font-semibold mt-1 block">AI-Powered Platform</span>
+        </div>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-300">
+        <a href="#features" class="hover:text-cyan-300 transition-colors">Features</a>
+        <a href="#ai-engine" class="hover:text-cyan-300 transition-colors">AI Engine</a>
+        <a href="#how-it-works" class="hover:text-cyan-300 transition-colors">How It Works</a>
+      </nav>
+
+      <div class="flex items-center gap-2.5">
+        {% if current_student %}
+          <a href="{{ url_for('pages.dashboard') }}" class="btn btn-cyan btn-sm sm:px-4 sm:py-2">Go to Dashboard</a>
+          <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-light btn-sm">Logout</a>
+        {% else %}
+          <a href="{{ url_for('pages.login_page') }}" class="btn btn-outline-light btn-sm sm:px-4 sm:py-2">Login</a>
+          <a href="{{ url_for('pages.register_page') }}" class="btn btn-primary btn-sm sm:px-4 sm:py-2">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-navy hero-grid-pattern py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-12 gap-12 items-center">
+        <!-- Left Copy -->
+        <div class="lg:col-span-6 space-y-6 animate-fade-up">
+          <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-cyan-300">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 pulse-dot"></span>
+            Built for College Students &middot; 5 Intelligent AI Modules
+          </div>
+
+          <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] text-white">
+            <span class="highlight-study-title">Study</span> <span class="highlight-word-dark">Smarter</span>,<br />
+            <span class="highlight-gradient">
+              Not Harder.
+            </span>
+          </h1>
+
+          <p class="text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed">
+            An <span class="highlight-word-dark">AI-Based Smart Study Planner</span> built to be effortless from day one: add your courses, get an <span class="highlight-word-dark">adaptive timetable</span>, spot <span class="highlight-word-dark">weak topics</span> early, and chat with a <span class="highlight-word-dark">24/7 AI mentor</span>.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3.5 pt-2">
+            <a href="{{ url_for('pages.dashboard') if current_student else url_for('pages.register_page') }}" class="btn btn-cyan px-6 py-3.5 text-base">
+              Get Started
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </a>
+            {% if not current_student %}
+              <a href="{{ url_for('pages.login_page') }}" class="btn btn-outline-light px-6 py-3.5 text-base">Login</a>
+              <a href="{{ url_for('pages.register_page') }}" class="btn btn-primary px-6 py-3.5 text-base">Register</a>
+            {% endif %}
+          </div>
+
+          <div class="grid grid-cols-3 gap-4 pt-6 border-t border-white/10 max-w-lg">
+            <div>
+              <p class="text-2xl font-extrabold text-cyan-300">5 AI</p>
+              <p class="text-xs text-slate-400">Adaptive Engines</p>
+            </div>
+            <div>
+              <p class="text-2xl font-extrabold text-white">100%</p>
+              <p class="text-xs text-slate-400">Dynamic Schedules</p>
+            </div>
+            <div>
+              <p class="text-2xl font-extrabold text-purple-300">MySQL</p>
+              <p class="text-xs text-slate-400">Persistent Tracking</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Interactive Illustration + Animated Dashboard Mockup -->
+        <div class="lg:col-span-6 relative">
+          <div class="glass-panel p-5 sm:p-6 animate-float">
+            <div class="flex items-center justify-between pb-4 border-b border-white/10">
+              <div class="flex items-center gap-2.5">
+                <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+                <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                <span class="ml-2 text-xs font-semibold text-slate-300">AI Smart Timetable Preview</span>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-cyan-400/15 text-cyan-300 text-[11px] font-semibold">Auto-Adapted</span>
+            </div>
+
+            <!-- Interactive SVG & Card Visualization -->
+            <div class="mt-4 space-y-3">
+              <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-purple-600/30 border border-purple-400/30 flex items-center justify-center text-purple-300 font-bold text-xs">CS301</div>
+                  <div>
+                    <p class="text-sm font-semibold text-white">Dynamic Programming &amp; Trees</p>
+                    <p class="text-xs text-slate-400">09:00 AM - 10:30 AM &middot; Weak Topic Boost</p>
+                  </div>
+                </div>
+                <span class="px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 text-xs font-semibold">Priority High</span>
+              </div>
+
+              <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-300 font-bold text-xs">MA204</div>
+                  <div>
+                    <p class="text-sm font-semibold text-white">Eigenvalues &amp; Diagonalization</p>
+                    <p class="text-xs text-slate-400">02:00 PM - 03:00 PM &middot; Smart Revision (Day 3)</p>
+                  </div>
+                </div>
+                <span class="px-2.5 py-1 rounded-lg bg-cyan-400/20 text-cyan-300 text-xs font-semibold">Exam in 5d</span>
+              </div>
+
+              <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300 font-bold text-xs">DB402</div>
+                  <div>
+                    <p class="text-sm font-semibold text-white">Normalization &amp; Indexing</p>
+                    <p class="text-xs text-slate-400">05:00 PM - 06:00 PM &middot; Practice Quiz Ready</p>
+                  </div>
+                </div>
+                <span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-xs font-semibold">88% Mastery</span>
+              </div>
+            </div>
+
+            <!-- AI Readiness Chart Vector Illustration -->
+            <div class="mt-5 pt-4 border-t border-white/10 flex items-center justify-between gap-4">
+              <div class="flex-1">
+                <div class="flex justify-between text-xs text-slate-300 mb-1.5">
+                  <span>Weekly Study Goal Progress</span>
+                  <span class="text-cyan-300 font-bold">84% On Track</span>
+                </div>
+                <div class="w-full h-2.5 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full w-[84%] bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full"></div>
+                </div>
+              </div>
+              <svg class="w-16 h-12 shrink-0" viewBox="0 0 80 50" fill="none">
+                <path d="M4 42 L20 30 L34 34 L50 16 L66 20 L76 6" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="76" cy="6" r="4" fill="#8B5CF6" stroke="#22D3EE" stroke-width="2" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Highlights Section -->
+  <section id="features" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <span class="badge badge-purple mb-3">Simple &amp; Complete Ecosystem</span>
+        <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Everything You Need to <span class="highlight-word">Ace Every Semester</span></h2>
+        <p class="text-slate-600 mt-3">Easy 1-click workflows for <span class="highlight-word">smart timetables</span>, <span class="highlight-word">weak topic alerts</span>, and <span class="highlight-word">spaced revision</span>.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Feature 1 -->
+        <div class="card card-hover p-6">
+          <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900">Smart Timetable Generator</h3>
+          <p class="text-sm text-slate-600 mt-2">Automatically builds daily and weekly schedules weighted by exam proximity, subject difficulty, priority, and your preferred study window.</p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="card card-hover p-6">
+          <div class="w-12 h-12 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900">Weak Topic Detector</h3>
+          <p class="text-sm text-slate-600 mt-2">Combines self-understanding ratings, quiz scores, and topic difficulty to classify Weak, Average, and Strong areas automatically.</p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="card card-hover p-6">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900">Adaptive Study Planner</h3>
+          <p class="text-sm text-slate-600 mt-2">Missed a session or finished early? One click adapts your upcoming timetable around completed and pending topics seamlessly.</p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="card card-hover p-6">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900">Smart Revision Predictor</h3>
+          <p class="text-sm text-slate-600 mt-2">Uses spaced-repetition forgetting curves to pinpoint the exact day you should revisit each topic before memory fades.</p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="card card-hover p-6">
+          <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900">AI Study Assistant</h3>
+          <p class="text-sm text-slate-600 mt-2">Ask topic questions, request step-by-step explanations, get personalized study strategies, and optimize your weekly routine.</p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="card card-hover p-6">
+          <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900">Smart Reminders &amp; Analytics</h3>
+          <p class="text-sm text-slate-600 mt-2">Interactive progress charts, consistency streaks, exam countdown alerts, daily study prompts, and pending-topic nudges.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Engine Architecture & How It Works -->
+  <section id="ai-engine" class="py-20 bg-slate-50 border-y border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div class="space-y-5">
+          <span class="badge badge-cyan">Intelligent Recommendation Core</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">How Our AI Prioritizes Your Study Hours</h2>
+          <p class="text-slate-600 leading-relaxed">
+            Instead of generic to-do lists, our Python recommendation engine computes a dynamic priority score for every pending topic using exam urgency, difficulty weight, weakness severity, and forgetting-curve decay.
+          </p>
+          <ul class="space-y-3 text-sm text-slate-700">
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-purple-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
+              <span><strong>Exam Proximity Weighting:</strong> Automatically boosts subjects with approaching exam dates while keeping foundation courses steady.</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-purple-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
+              <span><strong>Weakness-Aware Allocation:</strong> Allocates deeper blocks and spaced revision slots to topics flagged by low quiz scores or confidence ratings.</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-purple-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
+              <span><strong>Real-Time Adaptation:</strong> Logs every completed or missed session to MySQL and re-balances tomorrow's plan automatically.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div id="how-it-works" class="bg-[#0b1437] text-white rounded-3xl p-7 sm:p-9 shadow-xl relative overflow-hidden">
+          <div class="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-purple-600/20 blur-2xl"></div>
+          <div class="absolute -left-12 -bottom-12 w-48 h-48 rounded-full bg-cyan-400/20 blur-2xl"></div>
+          <h3 class="text-xl font-bold mb-6 relative">3 Steps to Peak Academic Focus</h3>
+          <div class="space-y-5 relative">
+            <div class="flex gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+              <div class="w-10 h-10 rounded-xl bg-cyan-400 text-slate-950 font-extrabold flex items-center justify-center shrink-0">01</div>
+              <div>
+                <h4 class="font-bold text-white">Add Subjects, Chapters &amp; Exam Dates</h4>
+                <p class="text-xs text-slate-300 mt-1">Organize your semester courses, set priority levels, and rate initial confidence per topic.</p>
+              </div>
+            </div>
+            <div class="flex gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+              <div class="w-10 h-10 rounded-xl bg-purple-500 text-white font-extrabold flex items-center justify-center shrink-0">02</div>
+              <div>
+                <h4 class="font-bold text-white">Generate Your AI Daily &amp; Weekly Timetable</h4>
+                <p class="text-xs text-slate-300 mt-1">Choose your daily available hours and let the AI assign optimal study and revision blocks.</p>
+              </div>
+            </div>
+            <div class="flex gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+              <div class="w-10 h-10 rounded-xl bg-emerald-400 text-slate-950 font-extrabold flex items-center justify-center shrink-0">03</div>
+              <div>
+                <h4 class="font-bold text-white">Track Progress, Take Quizzes &amp; Adapt</h4>
+                <p class="text-xs text-slate-300 mt-1">Watch mastery grow through visual analytics, smart reminders, and personalized AI coaching.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom CTA & Footer -->
+  <section class="py-16 bg-white">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="hero-navy rounded-3xl p-8 sm:p-12 text-center shadow-2xl">
+        <h2 class="text-2xl sm:text-4xl font-extrabold text-white">Ready to Transform How You Study?</h2>
+        <p class="text-slate-300 mt-3 max-w-xl mx-auto">Create your free student account in seconds or explore with pre-loaded college sample data.</p>
+        <div class="flex flex-wrap justify-center gap-3.5 mt-7">
+          <a href="{{ url_for('pages.register_page') }}" class="btn btn-cyan px-7 py-3.5">Get Started Free</a>
+          <a href="{{ url_for('pages.login_page') }}" class="btn btn-outline-light px-7 py-3.5">Student Login</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-[#0b1437] text-slate-400 py-8 border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
+      <div class="flex items-center gap-2 text-white font-semibold">
+        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+        AI-Based Smart Study Planner
+      </div>
+      <p>Built with Python Flask, MySQL, Tailwind CSS &amp; Intelligent Recommendation Engines.</p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+</body>
+</html>
+

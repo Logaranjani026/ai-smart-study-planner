@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% set active_page = "assistant" %}
+
+{% block title %}AI Study Assistant{% endblock %}
+{% block page_heading %}AI Study Assistant{% endblock %}
+{% block page_subheading %}Ask <span class="highlight-word">study questions</span>, clarify <span class="highlight-word">hard topics</span>, and get <span class="highlight-word">instant timetable tips</span>{% endblock %}
+
+{% block content %}
+<div class="grid lg:grid-cols-12 gap-6 animate-fade-up">
+
+  <!-- Chat Workspace -->
+  <div class="lg:col-span-8 card flex flex-col h-[74vh] min-h-[520px] overflow-hidden">
+    <!-- Chat Header -->
+    <div class="px-6 py-4 bg-[#0b1437] text-white flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-cyan-400 flex items-center justify-center font-extrabold text-sm">AI</div>
+        <div>
+          <h2 class="text-sm font-bold">StudyPulse AI Mentor</h2>
+          <p class="text-[11px] text-cyan-300">Context-aware of your subjects, exams &amp; weak topics</p>
+        </div>
+      </div>
+      <button id="clearChatBtn" type="button" class="btn btn-outline-light btn-sm text-xs">Reset Chat</button>
+    </div>
+
+    <!-- Quick Prompts -->
+    <div class="px-5 py-3 bg-slate-50 border-b border-slate-200 flex flex-wrap gap-2">
+      <button type="button" class="quick-prompt-chip badge badge-purple cursor-pointer hover:opacity-80 py-1.5 px-3" data-prompt="What topics should I revise today based on my weak areas?">What to revise today?</button>
+      <button type="button" class="quick-prompt-chip badge badge-cyan cursor-pointer hover:opacity-80 py-1.5 px-3" data-prompt="Help me organize my study timetable for upcoming exams.">Organize my timetable</button>
+      <button type="button" class="quick-prompt-chip badge badge-navy cursor-pointer hover:opacity-80 py-1.5 px-3" data-prompt="Give me personalized study tips based on my current progress.">Personalized study tips</button>
+      <button type="button" class="quick-prompt-chip badge badge-amber cursor-pointer hover:opacity-80 py-1.5 px-3" data-prompt="Explain my weakest topic step by step with examples.">Explain weakest topic</button>
+    </div>
+
+    <!-- Messages Area -->
+    <div id="chatMessagesContainer" class="flex-1 p-5 overflow-y-auto custom-scrollbar space-y-4 bg-slate-50/50">
+      <div class="flex gap-3 max-w-2xl">
+        <div class="w-8 h-8 rounded-lg bg-[#0b1437] text-cyan-300 flex items-center justify-center text-xs font-bold shrink-0">AI</div>
+        <div class="chat-bubble-ai p-4 text-sm leading-relaxed">
+          <p class="font-bold text-slate-900 mb-1">Hello {{ current_student.full_name.split(' ')[0] }}! How can I help you study smarter today?</p>
+          <p class="text-slate-600">You can ask me to explain difficult concepts (e.g., <em>"Explain Dynamic Programming"</em> or <em>"Explain Database Normalization"</em>), analyze your weak topics, predict what to revise next, or plan your study blocks.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Bar -->
+    <form id="assistantChatForm" class="p-4 bg-white border-t border-slate-200 flex gap-3">
+      <input id="assistantInput" type="text" class="form-input flex-1" placeholder="Ask any study question, topic explanation, or timetable advice..." required />
+      <button id="assistantSendBtn" type="submit" class="btn btn-primary px-5">
+        <span>Send</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+        </svg>
+      </button>
+    </form>
+  </div>
+
+  <!-- Live Context Side Panel -->
+  <div class="lg:col-span-4 space-y-5">
+    <div class="card p-5">
+      <h3 class="text-sm font-bold text-slate-900 mb-3">AI Context Snapshot</h3>
+      <div id="assistantContextBox" class="space-y-3 text-xs text-slate-600">
+        <p>Loading your live academic context...</p>
+      </div>
+    </div>
+
+    <div class="card p-5">
+      <h3 class="text-sm font-bold text-slate-900 mb-2">Explain a Specific Topic</h3>
+      <p class="text-xs text-slate-500 mb-3">Pick any topic from your syllabus for an instant structured breakdown.</p>
+      <select id="explainTopicSelect" class="form-select mb-3 text-sm">
+        <option value="">Loading your topics...</option>
+      </select>
+      <button id="explainTopicBtn" type="button" class="btn btn-cyan w-full btn-sm">Generate Topic Guide</button>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/assistant.js') }}"></script>
+{% endblock %}
+

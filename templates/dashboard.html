@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% set active_page = "dashboard" %}
+
+{% block title %}Student Dashboard{% endblock %}
+{% block page_heading %}Welcome back, {{ current_student.full_name.split(' ')[0] }}{% endblock %}
+{% block page_subheading %}{{ current_student.department }} &middot; {{ current_student.year_of_study }} &middot; Personalized AI Study Overview{% endblock %}
+
+{% block content %}
+<div class="space-y-6 animate-fade-up">
+
+  <!-- Hero AI Briefing Strip -->
+  <div class="hero-navy rounded-2xl p-6 sm:p-7 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 shadow-lg">
+    <div class="space-y-2 max-w-2xl">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-cyan-300 text-xs font-semibold">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 pulse-dot"></span>
+        AI Study Coach Briefing
+      </div>
+      <h2 id="aiHeadline" class="font-display text-xl sm:text-2xl font-bold text-white">Analyzing your subjects, exams, and study pace...</h2>
+      <p id="aiSubtext" class="text-sm text-slate-300">Fetching live recommendations from your <span class="highlight-word-dark">study schedule</span> and <span class="highlight-word-dark">weak-topic detector</span>.</p>
+    </div>
+    <div class="flex flex-wrap gap-3 shrink-0">
+      <a href="{{ url_for('pages.planner_page') }}" class="btn btn-cyan btn-sm sm:px-4 sm:py-2.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        Generate AI Plan
+      </a>
+      <button id="quickLogOpenBtn" type="button" class="btn btn-outline-light btn-sm sm:px-4 sm:py-2.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        Log Study Session
+      </button>
+    </div>
+  </div>
+
+  <!-- Easy 4-Step Quick Actions Bar -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+    <a href="{{ url_for('pages.subjects_page') }}" class="easy-quick-card">
+      <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 font-mono-tech text-xs font-bold flex items-center justify-center shrink-0">01</span>
+      <div>
+        <p class="text-sm font-bold text-slate-900">Manage <span class="highlight-word">Subjects</span></p>
+        <p class="text-xs text-slate-500">Add courses &amp; exam dates</p>
+      </div>
+    </a>
+    <a href="{{ url_for('pages.planner_page') }}" class="easy-quick-card">
+      <span class="w-8 h-8 rounded-lg bg-cyan-100 text-cyan-700 font-mono-tech text-xs font-bold flex items-center justify-center shrink-0">02</span>
+      <div>
+        <p class="text-sm font-bold text-slate-900">Build <span class="highlight-word">AI Timetable</span></p>
+        <p class="text-xs text-slate-500">1-click daily &amp; weekly plan</p>
+      </div>
+    </a>
+    <a href="{{ url_for('pages.weak_topics_page') }}" class="easy-quick-card">
+      <span class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 font-mono-tech text-xs font-bold flex items-center justify-center shrink-0">03</span>
+      <div>
+        <p class="text-sm font-bold text-slate-900">Spot <span class="highlight-word">Weak Topics</span></p>
+        <p class="text-xs text-slate-500">Rate topics &amp; quick quiz</p>
+      </div>
+    </a>
+    <a href="{{ url_for('pages.assistant_page') }}" class="easy-quick-card">
+      <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 font-mono-tech text-xs font-bold flex items-center justify-center shrink-0">04</span>
+      <div>
+        <p class="text-sm font-bold text-slate-900">Ask <span class="highlight-word">AI Mentor</span></p>
+        <p class="text-xs text-slate-500">Instant concept &amp; plan help</p>
+      </div>
+    </a>
+  </div>
+
+  <!-- 4 KPI Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <!-- Total Subjects -->
+    <div class="kpi-card">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Subjects</p>
+          <p id="kpiSubjects" class="text-3xl font-extrabold text-slate-900 mt-1.5">--</p>
+          <p id="kpiSubjectsMeta" class="text-xs text-slate-500 mt-1">Active semester courses</p>
+        </div>
+        <div class="w-11 h-11 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Study Hours -->
+    <div class="kpi-card">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Study Hours</p>
+          <p id="kpiHours" class="text-3xl font-extrabold text-slate-900 mt-1.5">--</p>
+          <p id="kpiHoursMeta" class="text-xs text-cyan-700 font-medium mt-1">This week: -- hrs</p>
+        </div>
+        <div class="w-11 h-11 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completed Topics -->
+    <div class="kpi-card">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Completed Topics</p>
+          <p id="kpiCompleted" class="text-3xl font-extrabold text-emerald-600 mt-1.5">--</p>
+          <p id="kpiCompletedMeta" class="text-xs text-slate-500 mt-1">Completion rate: --%</p>
+        </div>
+        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending Topics -->
+    <div class="kpi-card">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Pending Topics</p>
+          <p id="kpiPending" class="text-3xl font-extrabold text-slate-900 mt-1.5">--</p>
+          <p id="kpiPendingMeta" class="text-xs text-amber-600 font-medium mt-1">Weak topics flagged: --</p>
+        </div>
+        <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Middle Grid: Daily Progress + Weekly Chart -->
+  <div class="grid lg:grid-cols-12 gap-6">
+    <!-- Daily Study Progress -->
+    <div class="lg:col-span-5 card p-6 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Daily Study Progress</h3>
+            <p class="text-xs text-slate-500">Target vs logged hours today</p>
+          </div>
+          <span id="dailyPctBadge" class="badge badge-cyan">0%</span>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 mb-5">
+          <div class="flex items-baseline justify-between mb-2">
+            <span class="text-2xl font-extrabold text-slate-900"><span id="dailyHoursDone">0.0</span> <span class="text-sm font-medium text-slate-500">hrs studied</span></span>
+            <span class="text-xs font-semibold text-slate-500">Goal: <span id="dailyHoursGoal">4.0</span> hrs</span>
+          </div>
+          <div class="progress-track">
+            <div id="dailyProgressBar" class="progress-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between mb-2.5">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">Today's AI Study Blocks</h4>
+          <a href="{{ url_for('pages.planner_page') }}" class="text-xs font-semibold text-purple-600 hover:underline">Full Planner &rarr;</a>
+        </div>
+        <div id="todayTasksList" class="space-y-2.5 max-h-60 overflow-y-auto custom-scrollbar pr-1">
+          <p class="text-sm text-slate-400 py-4 text-center">Loading today's schedule...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly Progress Chart -->
+    <div class="lg:col-span-7 card p-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Weekly Study Activity</h3>
+          <p class="text-xs text-slate-500">Hours studied over the last 7 days</p>
+        </div>
+        <div class="flex items-center gap-3 text-xs font-medium text-slate-600">
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-600"></span>Study Hours</span>
+          <a href="{{ url_for('pages.progress_page') }}" class="text-purple-600 font-semibold hover:underline">Analytics &rarr;</a>
+        </div>
+      </div>
+      <div class="h-72 relative">
+        <canvas id="weeklyProgressChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Grid: Upcoming Exams + Personalized AI Suggestions -->
+  <div class="grid lg:grid-cols-12 gap-6">
+    <!-- Upcoming Exams -->
+    <div class="lg:col-span-5 card p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Upcoming Exams</h3>
+          <p class="text-xs text-slate-500">Sorted by urgency &amp; readiness</p>
+        </div>
+        <a href="{{ url_for('pages.subjects_page') }}" class="text-xs font-semibold text-purple-600 hover:underline">Manage &rarr;</a>
+      </div>
+      <div id="upcomingExamsList" class="space-y-3">
+        <p class="text-sm text-slate-400 py-4 text-center">Loading exams...</p>
+      </div>
+    </div>
+
+    <!-- Personalized AI Suggestions -->
+    <div class="lg:col-span-7 card p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Personalized AI Suggestions</h3>
+          <p class="text-xs text-slate-500">Generated by Weak Topic Detector, Revision Predictor &amp; Adaptive Planner</p>
+        </div>
+        <a href="{{ url_for('pages.assistant_page') }}" class="btn btn-outline btn-sm">Ask AI Assistant</a>
+      </div>
+      <div id="aiSuggestionsList" class="space-y-3">
+        <p class="text-sm text-slate-400 py-4 text-center">Computing intelligent recommendations...</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Quick Log Study Session Modal -->
+<div id="quickLogModal" class="modal-overlay">
+  <div class="modal-box p-6">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+      <h3 class="text-lg font-bold text-slate-900">Log Study Session</h3>
+      <button type="button" onclick="closeModal('quickLogModal')" class="text-slate-400 hover:text-slate-700">&times;</button>
+    </div>
+    <form id="quickLogForm" class="space-y-4 mt-4">
+      <div>
+        <label class="form-label">Subject</label>
+        <select id="logSubjectSelect" class="form-select" required></select>
+      </div>
+      <div>
+        <label class="form-label">Topic (Optional)</label>
+        <select id="logTopicSelect" class="form-select">
+          <option value="">General subject study</option>
+        </select>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Hours Studied</label>
+          <input id="logHoursInput" type="number" step="0.25" min="0.25" max="14" value="1.5" class="form-input" required />
+        </div>
+        <div>
+          <label class="form-label">Focus Rating (1-5)</label>
+          <select id="logFocusSelect" class="form-select">
+            <option value="5">5 - Deep Focus</option>
+            <option value="4" selected>4 - Good Focus</option>
+            <option value="3">3 - Moderate</option>
+            <option value="2">2 - Distracted</option>
+            <option value="1">1 - Low</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="form-label">Study Notes</label>
+        <input id="logNotesInput" type="text" class="form-input" placeholder="e.g., Solved 10 practice problems" />
+      </div>
+      <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" onclick="closeModal('quickLogModal')" class="btn btn-outline">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Progress</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
+

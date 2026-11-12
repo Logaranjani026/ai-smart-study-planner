@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Smart Study Planner{% endblock %} &mdash; AI-Based Smart Study Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=4) }}" />
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="appSidebar" class="app-sidebar">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <a href="{{ url_for('pages.landing') }}" class="flex items-center gap-3 text-white no-underline">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-cyan-400 flex items-center justify-center shadow-lg">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <div>
+            <span class="font-display font-bold text-sm block leading-tight"><span class="px-1.5 py-0.5 rounded bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white">Study</span> Planner</span>
+            <span class="text-[10px] uppercase tracking-widest text-cyan-300 font-semibold mt-0.5 block">AI Edition</span>
+          </div>
+        </a>
+        <button id="closeSidebarBtn" type="button" class="lg:hidden text-slate-400 hover:text-white p-1" aria-label="Close sidebar">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <nav class="flex-1 py-4 overflow-y-auto custom-scrollbar">
+        <div class="px-5 mb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Workspace</div>
+
+        <a href="{{ url_for('pages.dashboard') }}" class="sidebar-nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="{{ url_for('pages.subjects_page') }}" class="sidebar-nav-link {% if active_page == 'subjects' %}active{% endif %}">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          <span>Subjects &amp; Topics</span>
+        </a>
+
+        <a href="{{ url_for('pages.planner_page') }}" class="sidebar-nav-link {% if active_page == 'planner' %}active{% endif %}">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span>AI Study Planner</span>
+        </a>
+
+        <div class="px-5 mt-5 mb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Intelligence</div>
+
+        <a href="{{ url_for('pages.weak_topics_page') }}" class="sidebar-nav-link {% if active_page == 'weak_topics' %}active{% endif %}">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <span>Weak Topic Detector</span>
+        </a>
+
+        <a href="{{ url_for('pages.assistant_page') }}" class="sidebar-nav-link {% if active_page == 'assistant' %}active{% endif %}">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          </svg>
+          <span>AI Study Assistant</span>
+        </a>
+
+        <a href="{{ url_for('pages.progress_page') }}" class="sidebar-nav-link {% if active_page == 'progress' %}active{% endif %}">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          <span>Progress Tracking</span>
+        </a>
+
+        <a href="{{ url_for('pages.reminders_page') }}" class="sidebar-nav-link {% if active_page == 'reminders' %}active{% endif %} justify-between">
+          <span class="flex items-center gap-3">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            <span>Reminders</span>
+          </span>
+          <span id="sidebarReminderBadge" class="hidden px-2 py-0.5 text-[11px] font-bold rounded-full bg-cyan-400 text-slate-950">0</span>
+        </a>
+      </nav>
+
+      <!-- Student Profile Footer -->
+      <div class="p-4 border-t border-white/10 bg-black/15">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm shrink-0">
+            {{ current_student.full_name[0]|upper if current_student else 'S' }}
+          </div>
+          <div class="min-w-0">
+            <p class="text-sm font-semibold text-white truncate">{{ current_student.full_name if current_student else 'Student' }}</p>
+            <p class="text-xs text-slate-400 truncate">{{ current_student.department if current_student else '' }} &middot; {{ current_student.year_of_study if current_student else '' }}</p>
+          </div>
+        </div>
+        <a href="{{ url_for('auth.logout') }}" class="w-full btn btn-outline-light btn-sm text-xs justify-center">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Sign Out
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Workspace Area -->
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="flex items-center gap-3">
+          <button id="openSidebarBtn" type="button" class="lg:hidden p-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100" aria-label="Open navigation">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div>
+            <h1 class="font-display text-lg sm:text-xl font-bold text-slate-900 leading-tight">{% block page_heading %}Dashboard{% endblock %}</h1>
+            <p class="text-xs text-slate-500 hidden sm:block">{% block page_subheading %}Your personalized AI study command center{% endblock %}</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5">
+          <a href="{{ url_for('pages.reminders_page') }}" class="relative p-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 hover:text-purple-600 hover:border-purple-300 transition-colors" title="View Reminders">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            <span id="topbarReminderDot" class="hidden absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-white"></span>
+          </a>
+          <a href="{{ url_for('pages.planner_page') }}" class="btn btn-primary btn-sm hidden sm:inline-flex">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            AI Timetable
+          </a>
+        </div>
+      </header>
+
+      <main class="app-content">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
+
